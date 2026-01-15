@@ -8,7 +8,6 @@ function ProductList({ onHomeClick }) {
     const dispatch = useDispatch();
 
     const [showCart, setShowCart] = useState(false);
-    const [showPlants, setShowPlants] = useState(false);
     const [addedToCart, setAddedToCart] = useState({});
 
     const plantsArray = [
@@ -69,7 +68,7 @@ function ProductList({ onHomeClick }) {
         dispatch(addItem(plant));
         setAddedToCart((prev) => ({
             ...prev,
-            [plant.name]: true
+            [plant.name]: true,
         }));
     };
 
@@ -78,26 +77,54 @@ function ProductList({ onHomeClick }) {
         setShowCart(true);
     };
 
-    const handlePlantsClick = (e) => {
-        e.preventDefault();
-        setShowPlants(true);
-        setShowCart(false);
-    };
-
-    const handleContinueShopping = (e) => {
-        e.preventDefault();
+    const handleContinueShopping = () => {
         setShowCart(false);
     };
 
     return (
         <div>
+            {/* NAVBAR */}
             <div className="navbar">
                 <h3 onClick={onHomeClick}>Paradise Nursery</h3>
                 <div>
-                    <a href="#" onClick={handlePlantsClick}>Plants</a>
+                    <a href="#" onClick={(e) => e.preventDefault()}>Plants</a>
                     <a href="#" onClick={handleCartClick}>🛒</a>
                 </div>
             </div>
 
+            {/* MAIN CONTENT */}
             {!showCart ? (
                 <div className="product-grid">
+                    {plantsArray.map((category, index) => (
+                        <div key={index}>
+                            <h2>{category.category}</h2>
+
+                            <div className="product-grid">
+                                {category.plants.map((plant, idx) => (
+                                    <div className="product-card" key={idx}>
+                                        <img src={plant.image} alt={plant.name} />
+                                        <h3>{plant.name}</h3>
+                                        <p>{plant.description}</p>
+                                        <p>{plant.cost}</p>
+                                        <button
+                                            onClick={() => handleAddToCart(plant)}
+                                            disabled={addedToCart[plant.name]}
+                                        >
+                                            {addedToCart[plant.name]
+                                                ? "Added to Cart"
+                                                : "Add to Cart"}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <CartItem onContinueShopping={handleContinueShopping} />
+            )}
+        </div>
+    );
+}
+
+export default ProductList;
